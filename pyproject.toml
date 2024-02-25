@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "iptu-2024"
+version = "0.1.0"
+description = "Dashboard analise iptu 2024"
+authors = ["maellson <mqmaellson39@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+streamlit = "^1.31.1"
+plotly-express = "^0.4.1"
+
+[tool.poetry.group.dev.dependencies]
+pandas = "^2.2.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
