@@ -7,8 +7,10 @@ import plotly.express as px
 st.set_page_config(layout='wide')
 # código
 
-df = pd.read_csv("relatrorio2024.csv", sep=";",
+df = pd.read_csv("lancamento_2024.csv", sep=";",
                  decimal=".", encoding="cp1252", dtype={34: str})
+# df.columns
+
 df['Inscricao'] = df['setor'].astype(str) + '.' + df['quadra'].astype(
     str) + '.' + df['lote'].astype(str) + '.' + df['Unidade'].astype(str)
 
@@ -17,7 +19,7 @@ novoDF = df[['Matrícula', 'Bairro', 'setor', 'quadra',
              'lote', 'Unidade', 'Inscricao', 'area_calculo',
              'area_edif_unid', 'area_lote', 'area_priv_unid', 'cod_condominio',
              'fracao_ideal', 'Aliquota', 'vlr_iptu', 'vlr_m2_terreno',
-             'vlr_venal_terr', 'vlr_m2_edif', 'vlr_venal_edif', 'tipo_imovel',
+             'vlr_venal_terr', 'vlr_m2_edif', 'vlr_venal_edif', 'vlr_tcr', 'tipo_imovel',
              'situacao', 'pedologia', 'tipo_construcao', 'ocupacao']].copy()
 
 
@@ -40,23 +42,23 @@ novoDF['matricula'] = novoDF['matricula'].apply(lambda x: f"{x:.0f}")
 st.title('Análise de Imóveis')
 
 # Adicionando um subtítulo para a seção de filtragem
-st.header('Filtragem de Imóveis no Centro com Lote Menor que 100m²')
+# st.header('Filtragem de Imóveis no Centro com Lote Menor que 100m²')
 
 # Explicação do que será feito
-st.write('A seguir, apresentamos os registros de imóveis localizados no bairro "Centro",' +
-         'cuja área do lote é menor que 100m². Este filtro permite identificar imóveis' +
-         'com lotes relativamente pequenos na região central.')
+# st.write('A seguir, apresentamos os registros de imóveis localizados no bairro "Centro",' +
+#         'cuja área do lote é menor que 100m². Este filtro permite identificar imóveis' +
+#         'com lotes relativamente pequenos na região central.')
 
 # Realiza o filtro
 filtro_centro = novoDF[(novoDF['bairro'] == 'CENTRO')
                        & (novoDF['area_lote'] < 100)]
 
 # Exibe o DataFrame filtrado
-st.write(filtro_centro)
+# st.write(filtro_centro)
 
 
 # Título do aplicativo
-st.header('Análise de Imóveis por Setor, Quadra e Lote')
+st.header('Análise de Imóveis por Setor, Quadra e Lote e Valor iptu')
 st.write('soma de valores por lote')
 
 # Entradas dinâmicas
@@ -98,51 +100,138 @@ if st.button('Aplicar Filtros'):
         st.markdown(f'**Soma do Valor do IPTU: R$** {soma_vlr_iptu:,.2f}')
 
         st.subheader(
-            'Seguindao a filtragem para encontrarmso a unidade com maior área e com a menor área²')
+            ' Estatística descritiva dos filtro aplicados')
 
         # Explicação do que será feito
-        st.write('A seguir, apresentamos os registros de imóveis localizados no bairro "Centro",' +
-                 'cuja área do lote é menor que 100m². Este filtro permite identificar imóveis' +
-                 'com lotes relativamente pequenos na região central.')
-        # Calculando estatísticas descritivas
+        st.write('A seguir, apresentamos os registros de imóveis conforme o filtro aplicado,'
+                 + 'demonstradno toda a estatística descritiva do lote, da área para cálculo,'
+                 + ' da área privativa e dos valores de IPTU.')
+
+        # Calculando estatísticas descritivas de área de calculo
         media_area = filtrado_df['area_lote'].mean()
         max_area = filtrado_df['area_lote'].max()
         min_area = filtrado_df['area_lote'].min()
+        # calculando estatísticas descritiva de valor de iptu
+        # 'area_priv_unid'
+        media_vlr_iptu = filtrado_df['vlr_iptu'].mean()
+        max_vlr_iptu = filtrado_df['vlr_iptu'].max()
+        min_vlr_iptu = filtrado_df['vlr_iptu'].min()
+
+        # calculando estatísticas descritiva da area e cálculo
+        media_area_calculo = filtrado_df['area_calculo'].mean()
+        max_area_calculo = filtrado_df['area_calculo'].max()
+        min_area_calculo = filtrado_df['area_calculo'].min()
+
+        # calculando estatísticas descritiva da area da unidade
+        media_area_priv_unid = filtrado_df['area_priv_unid'].mean()
+        max_area_priv_unid = filtrado_df['area_priv_unid'].max()
+        min_area_priv_unid = filtrado_df['area_priv_unid'].min()
 
         # Encontrando as unidades com a maior e menor área
-        unidade_max_area = filtrado_df[filtrado_df['area_lote'] == max_area]
-        unidade_min_area = filtrado_df[filtrado_df['area_lote'] == min_area]
+        unidade_max_area = filtrado_df[filtrado_df['area_lote']
+                                       == max_area]
+        unidade_min_area = filtrado_df[filtrado_df['area_lote']
+                                       == min_area]
 
+        # Encontrando as unidades com a maior e menor área para calculo
+        unidade_max_area_calculo = filtrado_df[filtrado_df['area_calculo']
+                                               == max_area_calculo]
+        unidade_min_area_calculo = filtrado_df[filtrado_df['area_calculo']
+                                               == min_area_calculo]
+
+        # Encontrando as unidades com a maior e menor área de unidade privativa
+        unidade_max_area_priv_unid = filtrado_df[filtrado_df['area_priv_unid']
+                                                 == max_area_priv_unid]
+        unidade_min_area_priv_unid = filtrado_df[filtrado_df['area_priv_unid']
+                                                 == min_area_priv_unid]
+
+        # Encontrando as unidades com a maior e menor valor IPTU
+        unidade_max_vlr_iptu = filtrado_df[filtrado_df['vlr_iptu']
+                                           == max_vlr_iptu]
+        unidade_min_vlr_iptu = filtrado_df[filtrado_df['vlr_iptu']
+                                           == min_vlr_iptu]
         # Exibindo os resultados
+        st.markdown(
+            "<h2 style='text-align: center;'><b>Análise da área do Lote</b></h2>", unsafe_allow_html=True)
+
         st.markdown(f"**Média da Área do Lote:** {media_area:.2f} m²")
         st.markdown(f'**Maior Área do Lote:** {max_area} m²')
-        st.subheader('**Unidade(s) com a Maior Área do Lote:**')
+        st.markdown('#### **Unidade(s) com a Maior Área do Lote:**')
         st.write(unidade_max_area)
         st.markdown(f'**Menor Área do Lote:** {min_area} m²')
-        st.subheader('**Unidade(s) com a Menor Área do Lote:**')
+        st.markdown('#### **Unidade(s) com a Menor Área do Lote:**')
         st.write(unidade_min_area)
+
+        # controle de área para Cálculo
+        st.markdown(
+            "<h2 style='text-align: center;'><b>Análise da área para cálculo</b></h2>", unsafe_allow_html=True)
+
+        st.markdown(
+            f"**Média da Área do Lote para calculo:** {media_area_calculo:.2f} m²")
+        st.markdown(
+            f'**Maior Área do Lote para calculo:** {max_area_calculo} m²')
+        st.markdown(
+            '#### **Unidade(s) com a Maior Área do Lote para calculo:**')
+        st.write(unidade_max_area_calculo)
+        st.markdown(
+            f'**Menor Área do Lote para calculo:** {min_area_calculo} m²')
+        st.markdown(
+            '#### **Unidade(s) com a Menor Área do Lote para calculo:**')
+        st.write(unidade_min_area_calculo)
+
+        # controle de área privativa unidade
+        st.markdown(
+            "<h2 style='text-align: center;'><b>Análise da área Privativa da Unidade</b></h2>", unsafe_allow_html=True)
+
+        st.markdown(
+            f"**Média da Área privativa da unidade:** {media_area_priv_unid:.2f} m²")
+        st.markdown(
+            f'**Maior Área privativa da unidade:** {max_area_priv_unid} m²')
+        st.markdown(
+            '#### **Unidade(s) com a Maior Área privativa da unidade:**')
+        st.write(unidade_max_area_priv_unid)
+        st.markdown(
+            f'**Menor Área privativa da unidade:** {min_area_priv_unid} m²')
+        st.markdown(
+            '#### **Unidade(s) com a Menor Área privativa da unidade:**')
+        st.write(unidade_min_area_priv_unid)
+
+        # controle de valor de iptu
+        st.markdown(
+            "<h2 style='text-align: center;'><b>Análise do valor do IPTU do Lote</b></h2>", unsafe_allow_html=True)
+
+        st.markdown(
+            f"**Média da Valor IPTU do Lote: R$** {media_vlr_iptu:.2f}")
+        st.markdown(f'**Maior Valor IPTU do Lote: R$** {max_vlr_iptu}')
+        st.markdown('#### **Unidade(s) com a Maior Valor IPTU:**')
+        st.write(unidade_max_vlr_iptu)
+        st.markdown(f'**Menor Valor IPTU: R$** {min_vlr_iptu}')
+        st.markdown(f'#### **Unidade(s) com o Menor Valor IPTU:**')
+        st.write(unidade_min_vlr_iptu)
+
 
 # Verificar se o filtro foi aplicado e se há dados para mostrar
 if 'filtro_aplicado' in st.session_state and st.session_state['filtro_aplicado']:
     filtrado_df = st.session_state['filtrado_df']
 
-''' # Seu código para mostrar a análise e os botões dos gráficos aqui, por exemplo:
-    if st.button('Gerar Gráfico de Outliers em Área do Lote'):
-        # Seu código para gerar e mostrar o gráfico aqui
-        fig1 = px.box(filtrado_df, y='area_lote', points="all", notched=True,
-                      title="Boxplot de Área do Lote")
-        st.plotly_chart(fig1, use_container_width=True)
 
-    if st.button('Gerar Gráfico de Outliers em Valores de IPTU'):
-        fig2 = px.box(filtrado_df, y='vlr_iptu', points="all", notched=True,
-                      title="Boxplot de Valores de IPTU")
-        st.plotly_chart(fig2, use_container_width=True)
+# # Seu código para mostrar a análise e os botões dos gráficos aqui, por exemplo:
+#     if st.button('Gerar Gráfico de Outliers em Área do Lote'):
+#         # Seu código para gerar e mostrar o gráfico aqui
+#         fig1 = px.box(filtrado_df, y='area_lote', points="all", notched=True,
+#                       title="Boxplot de Área do Lote")
+#         st.plotly_chart(fig1, use_container_width=True)
 
-    if st.button('Gerar Gráfico de Dispersão entre Área para Cálculo e Valor do IPTU'):
-        fig3 = px.scatter(filtrado_df, x='area_calculo', y='vlr_iptu',
-                          hover_data=['matricula'],
-                          title="Dispersão entre Área para Cálculo e Valor do IPTU")
-        st.plotly_chart(fig3, use_container_width=True)
-'''
+#     if st.button('Gerar Gráfico de Outliers em Valores de IPTU'):
+#         fig2 = px.box(filtrado_df, y='vlr_iptu', points="all", notched=True,
+#                       title="Boxplot de Valores de IPTU")
+#         st.plotly_chart(fig2, use_container_width=True)
+
+#     if st.button('Gerar Gráfico de Dispersão entre Área para Cálculo e Valor do IPTU'):
+#         fig3 = px.scatter(filtrado_df, x='area_calculo', y='vlr_iptu',
+#                           hover_data=['matricula'],
+#                           title="Dispersão entre Área para Cálculo e Valor do IPTU")
+#         st.plotly_chart(fig3, use_container_width=True) """
+
 
 # novo projet continuação área de graficos
