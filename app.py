@@ -10,9 +10,10 @@ st.set_page_config(layout='wide')
 df = pd.read_csv("lancamento_2024.csv", sep=";",
                  decimal=".", encoding="cp1252", dtype={34: str})
 # df.columns
-
 df['Inscricao'] = df['setor'].astype(str) + '.' + df['quadra'].astype(
     str) + '.' + df['lote'].astype(str) + '.' + df['Unidade'].astype(str)
+
+# df['vlr_iptu_maelson'] = if(df['area_lote'])
 
 
 novoDF = df[['Matrícula', 'Bairro', 'setor', 'quadra',
